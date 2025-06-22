@@ -12,7 +12,7 @@ exports.HINTSTATUS = HINTSTATUS;
 exports.Player = class Player {
   static Players = {};
 
-  constructor(name, socket, game, isHost) {
+  constructor(name, socket, game, isHost, icon) {
     this.name = name;
     this.socket = socket;
     this.guesses = [];
@@ -24,13 +24,13 @@ exports.Player = class Player {
     this.uuid = uuidv4();
     this.hints = [];
     this.canGuess = false;
+    this.icon = icon;
     Player.Players[this.uuid] = this;
   }
 
   clearRoundData() {
     this.guesses = [];
     this.bestGuessScore = 0;
-    this.score = 0;
     this.bestGuessHint = [HINTSTATUS.UNKNOWN, HINTSTATUS.UNKNOWN, HINTSTATUS.UNKNOWN, HINTSTATUS.UNKNOWN, HINTSTATUS.UNKNOWN];
     this.hints = [];
   }
@@ -87,6 +87,6 @@ exports.Player = class Player {
   }
 
   getPublicInfo() {
-    return { name: this.name, bestGuessHint: this.bestGuessHint, isHost: this.isHost, uuid: this.uuid, score: this.score };
+    return { name: this.name, bestGuessHint: this.bestGuessHint, isHost: this.isHost, uuid: this.uuid, score: this.score, icon: this.icon };
   }
 };

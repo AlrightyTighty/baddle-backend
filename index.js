@@ -108,7 +108,7 @@ const handleClose = (uuid) => {
 };
 
 wsServer.on("connection", (connection, request) => {
-  let { name, roomCode, makeRoom } = url.parse(request.url, true).query;
+  let { name, roomCode, makeRoom, selectedIcon } = url.parse(request.url, true).query;
   if (roomCode) roomCode = roomCode.toUpperCase();
   if (!name) {
     connection.close(1002, "You must enter a name.");
@@ -117,21 +117,21 @@ wsServer.on("connection", (connection, request) => {
   name = name.substring(0, 6);
   if (makeRoom == "true") {
     const newGame = new Game();
-    const newPlayer = new Player(name, connection, newGame, true);
+    const newPlayer = new Player(name, connection, newGame, true, selectedIcon);
     newGame.players.push(newPlayer);
     newGame.host = newPlayer;
     connection.on("message", (message) => handleMessage(message, newPlayer.uuid));
     connection.on("close", () => handleClose(newPlayer.uuid));
-    connection.send(JSON.stringify(newGame.getAllInfoPacket()));
+    newGame.fireAllClients(JSON.stringify(newGame.getAllInfoPacket()));
   } else if (roomCode) {
     if (Game.activeGames[roomCode]) {
       const game = Game.activeGames[roomCode];
       if ((!game.started || game.options.allowLateJoin) && game.players.length < game.options.roomSize) {
-        const newPlayer = new Player(name, connection, game, false);
+        const newPlayer = new Player(name, connection, game, false, selectedIcon);
         game.players.push(newPlayer);
         connection.on("message", (message) => handleMessage(message, newPlayer.uuid));
         connection.on("close", () => handleClose(newPlayer.uuid));
-        connection.send(JSON.stringify(game.getAllInfoPacket()));
+        game.fireAllClients(JSON.stringify(game.getAllInfoPacket()));
       } else {
         connection.close(1002, "This lobby isn't currently accepting players.");
       }
