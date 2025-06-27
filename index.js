@@ -78,14 +78,6 @@ new_round_packet {
   id: 8
 }
 
-
-// just a message that will appear in the bottom right of the players' screens.
-
-message_packet {
-  id: 9
-  message: string
-}
-
 */
 
 const handleMessage = (bytes, uuid) => {
@@ -95,9 +87,15 @@ const handleMessage = (bytes, uuid) => {
   // starting game
   if (message.id == 3 && game.host == player && !game.started) {
     game.start();
-    return;
   } else if (message.id == 0) {
     player.makeGuess(message.guess);
+  } else if (message.id == 4) {
+    message.uuid = uuid;
+    game.fireAllClients(JSON.stringify(message));
+  } else if (message.id == 2 && game.host == player) {
+    console.log("updated settings");
+    game.options = message.options;
+    game.fireAllClients(JSON.stringify(message));
   }
 };
 

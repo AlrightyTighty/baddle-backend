@@ -176,7 +176,7 @@ exports.Game = class Game {
 exports.GameOptions = class GameOptions {
   constructor() {
     this.roundLength = 300;
-    this.roomSize = 5;
+    this.roomSize = 10;
     this.allowLateJoin = false;
     this.numRounds = 3;
   }
