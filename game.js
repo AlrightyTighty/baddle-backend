@@ -144,13 +144,30 @@ exports.Game = class Game {
   }
 
   startRound() {
-    this.roundsPlayed++;
-    if (this.roundsPlayed > this.options.numRounds) return;
     this.players.forEach((player) => {
       player.clearRoundData();
+    });
+
+    this.roundsPlayed++;
+
+    if (this.roundsPlayed > this.options.numRounds) {
+      this.started = false;
+      this.roundsPlayed = 0;
+      this.players.forEach((player) => {
+        player.score = 0;
+      });
+      this.fireAllClients(JSON.stringify({ id: 10 }));
+      this.fireAllClients(JSON.stringify(this.getAllInfoPacket()));
+
+      return;
+    }
+
+    this.players.forEach((player) => {
       player.canGuess = true;
     });
+
     this.setWord();
+
     this.fireAllClients(JSON.stringify({ id: 8 }));
   }
 
@@ -175,7 +192,7 @@ exports.Game = class Game {
 
 exports.GameOptions = class GameOptions {
   constructor() {
-    this.roundLength = 300;
+    this.roundLength = 180;
     this.roomSize = 10;
     this.allowLateJoin = false;
     this.numRounds = 3;

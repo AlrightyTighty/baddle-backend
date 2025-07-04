@@ -8,7 +8,7 @@ const { Game } = require("./game.js");
 const server = http.createServer();
 const wsServer = new WebSocketServer({ server });
 
-const PORT = 3001;
+const PORT = parseInt(process.env.PORT);
 
 // message formats:
 
@@ -78,6 +78,13 @@ new_round_packet {
   id: 8
 }
 
+// sent by the server to every client once the game is over. lets them know to display the leaderboard.
+
+game_end_packet {
+  id: 10
+}
+
+
 */
 
 const handleMessage = (bytes, uuid) => {
@@ -112,7 +119,7 @@ wsServer.on("connection", (connection, request) => {
     connection.close(1002, "You must enter a name.");
     return;
   }
-  name = name.substring(0, 6);
+  name = name.substring(0, 20);
   if (makeRoom == "true") {
     const newGame = new Game();
     const newPlayer = new Player(name, connection, newGame, true, selectedIcon);

@@ -48,6 +48,7 @@ exports.Player = class Player {
   }
 
   makeGuess(guess) {
+    if (!this.canGuess) return;
     let newHint = this.game.guessDifference(guess);
     this.hints.push(newHint);
     let newScore = this.scoreHints(newHint);
