@@ -173,6 +173,10 @@ exports.Game = class Game {
 
   removePlayer(player) {
     this.players = this.players.filter((p) => p != player);
+    if (player.isHost && this.players.length > 0) {
+      this.host = this.players[0];
+      this.players[0].isHost = true;
+    }
     delete Player.Players[player.uuid];
 
     this.fireAllClients(JSON.stringify(this.getAllInfoPacket()));
